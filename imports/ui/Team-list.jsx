@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Avatar from 'material-ui/Avatar'
 import { ListItem } from 'material-ui/List'
+import ActionDeleteForever from 'material-ui/svg-icons/actions/delete-forever'
 
 export default class TeamList extends Component {
 	render() {
