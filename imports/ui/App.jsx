@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import  PropTypes from 'prop-types'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import AppBar from 'material-ui/AppBar'
 import { List } from 'material-ui/List'
@@ -14,72 +15,67 @@ import TeamList from './Team-list'
 import TeamStats from './Team-stats'
 import Player from './Player'
 import AccountsWrapper from './AccountsWrapper'
+import Edit from './Edit'
+
+const tempPlayer = {
+	name: 'Bolatan Adigun Ibrahim',
+	ballManipulation: 3,
+	kickingAbilities: 3,
+	passingAbilities: 3,
+	duelTackling: 2,
+	fieldCoverage: 2,
+	blockingAbilities: 2,
+	gameStrategy: 2,
+	playmakingRisks: 1,
+	team: 'Lagos',
+	notes: "This is a temporary player"
+}
 
 export class App extends Component {
 
 	constructor(props) {
 		super(props)
 
-		this.state = { players: [] }
+		this.state = { 
+			currentPlayer: tempPlayer,
+			showEditPlayer: false 
+		}
+		this.updateCurrentPlayer = this.updateCurrentPlayer.bind(this)
+		this.showEditForm = this.showEditForm.bind(this)
+		this.showTeamStats = this.showTeamStats.bind(this)
+
 	}
 
-
-	// componentWillMount() {
-	// 	this.setState({ players: [
-	// 		  {
-	// 		  	_id: 0,
-	// 		  	name: 'Bolatan Adigun Ibrahim',
-	// 		  	ballManipulation: 3,
-	// 		  	kickingAbilities: 3,
-	// 		  	passingAbilities: 3,
-	// 		  	duelTackling: 2,
-	// 		  	fieldCoverage: 2,
-	// 		  	blockingAbilities: 2,
-	// 		  	gameStrategy: 2,
-	// 		  	playmakingRisks: 1
-	// 		  },
-	// 		  {
-	// 		  	_id: 1,
-	// 		  	name: 'Akinyemi Saheed',
-	// 		  	ballManipulation: 3,
-	// 		  	kickingAbilities: 3,
-	// 		  	passingAbilities: 3,
-	// 		  	duelTackling: 2,
-	// 		  	fieldCoverage: 2,
-	// 		  	blockingAbilities: 2,
-	// 		  	gameStrategy: 2,
-	// 		  	playmakingRisks: 2
-	// 		  },
-	// 		  {
-	// 		  	_id: 2,
-	// 		  	name: 'Akinyemi Hasan',
-	// 		  	ballManipulation: 1,
-	// 		  	kickingAbilities: 1,
-	// 		  	passingAbilities: 1,
-	// 		  	duelTackling: 2,
-	// 		  	fieldCoverage: 3,
-	// 		  	blockingAbilities: 3,
-	// 		  	gameStrategy: 1,
-	// 		  	playmakingRisks: 1
-	// 		  },
-	// 		  {
-	// 		  	_id: 3,
-	// 		  	name: 'Akinyemi Muritadho',
-	// 		  	ballManipulation: 1,
-	// 		  	kickingAbilities: 1,
-	// 		  	passingAbilities: 1,
-	// 		  	duelTackling: 3,
-	// 		  	fieldCoverage: 3,
-	// 		  	blockingAbilities: 2,
-	// 		  	gameStrategy: 2,
-	// 		  	playmakingRisks: 1
-	// 		  }
-	// 		]}
-	// 	)
-	// }
+	updateCurrentPlayer(player) {
+		this.setState({
+			currentPlayer: player
+		})
+	}
 
 	renderPlayers() {
-		return this.props.players.map(player => <TeamList key={player._id} player={player} />)
+		return this.props.players.map(player => (
+			<TeamList key={player._id} player={player} updateCurrentPlayer={this.updateCurrentPlayer} />
+			)
+		)
+	}
+
+	showEditForm() {
+		this.setState({
+			showEditPlayer: true
+		})
+	}
+
+	showTeamStats() {
+		this.setState({
+			showEditPlayer: false
+		})
+	}
+
+	showForm() {
+		return this.state.showEditPlayer ? 
+			(<Edit currentPlayer={this.state.currentPlayer} showTeamStats={this.showTeamStats} />) :
+			(<TeamStats players={this.props.players} />)
+
 	}
 
 	render() {
@@ -90,22 +86,31 @@ export class App extends Component {
 					<AppBar 
 						title="Soccer Application"
 						iconClassNameRight="muidocs-icon-navigation-expand-more"
-						showMenuIconButton={false}> 
+						showMenuIconButton={false}
+						style={{backgroundColor: '#0277BD'}}> 
 
 						<AccountsWrapper />
 						
 					</AppBar>
 					<div className="row">
-						<div className="col s12 m7"><Player /></div>
+						<div className="col s12 m7"><Player player={this.state.currentPlayer} showEditForm={this.showEditForm}/></div>
 						<div className="col s12 m5">
-						<h2>Team List </h2><Link to="/new" className="waves-effect waves-light btn">Add player </Link>
+						<h2>Team List </h2><Link to="/new" className="waves-effect waves-light btn light-blue darken-3">Add player </Link>
 							<Divider />
 							<List>
 								{this.renderPlayers()}
 							</List>
 							<Divider />
 						</div>
-						<div className="col s12 m5"><TeamStats /></div>
+						
+					</div>
+					<div className="row">
+						<div className="col s12">
+							<br />
+							<Divider />
+							{this.showForm()}
+							<Divider />
+						</div>
 					</div>
 				</div>
 				
@@ -120,9 +125,10 @@ App.propTypes = {
 
 export default createContainer(() => {
 	Meteor.subscribe('players')
-	const user = Meteor.usersId()
+	const user = Meteor.userId()
 
 	return {
-		players: Players.find({ owner: user }, {name: 1}).fetch()
+		// players: Players.find({ owner: user }, {name: 1}).fetch()
+		players: Players.find({}, {name: 1}).fetch()
 	}
 }, App)

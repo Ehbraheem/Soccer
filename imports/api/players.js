@@ -26,7 +26,7 @@ const PlayerSchema = new SimpleSchema({
 	blockingAbilities: { type: Number, defaultValue: 0},
 	gameStrategy:      { type: Number, defaultValue: 0},
 	playmakingRisks:   { type: Number, defaultValue: 0},
-	owner:             { type: String},
+	// owner:             { type: String},
 })
 
-Players.attatchSchema(PlayerSchema)
+Players.attachSchema(PlayerSchema)

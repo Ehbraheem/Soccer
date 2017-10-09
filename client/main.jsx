@@ -6,13 +6,15 @@ import { Router, Route, browserHistory } from 'react-router'
 
 // const uiPath = '../imports/ui/'
 
+
 import App from '../imports/ui/App'
 import New from '../imports/ui/New'
 import Lost from '../imports/ui/Lost'
 
 injectTapEventPlugin()
+window.browserHistory = browserHistory
 
-Meteor.startup(() => render(() => 
+Meteor.startup(() => render( 
 	<Router history={browserHistory}>
 		<Route path="/" component={App}/>
 		<Route path="/new" component={New}/>
